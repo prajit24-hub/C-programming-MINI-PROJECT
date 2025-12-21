@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Patient {
+    int op_no;
+    char name[50];
+    char disease[50];
+    char doctor[50];
+};
+
+int main() {
+    struct Patient p;
+    int choice, search_op, found;
+    FILE *fp;
+
+    while (1) {
+        printf("\n--- Hospital Patient Record System ---\n");
+        printf("1. Add Patient Record\n");
+        printf("2. Display All Records\n");
+        printf("3. Search by OP Number\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+
+            /* ADD RECORD */
+            case 1:
+                fp = fopen("patients.csv "a");
+                if (fp == NULL) {
+                    printf("File cannot be opened!\n");
+                    break;
+                }
+
+                printf("Enter OP Number: ");
+                scanf("%d", &p.op_no);
+
+                printf("Enter Name: ");
+                scanf("%s", p.name);
+
+                printf("Enter Disease: ");
+                scanf("%s", p.disease);
+
+                printf("Enter Doctor Name: ");
+                scanf("%s", p.doctor);
+
+                fprintf(fp, "%d,%s,%s,%s\n",
+                        p.op_no, p.name, p.disease, p.doctor);
+
+                fclose(fp);
+                printf("Record added successfully!\n");
+                break;
+
+            /* DISPLAY ALL RECORDS */
+            case 2:
+                fp = fopen("patients.csv", "r");
+                if (fp == NULL) {
+                    printf("No records found!\n");
+                    break;
+                }
+
+                printf("\n--- Patient Records ---\n");
+                while (fscanf(fp, "%d,%49[^,],%49[^,],%49[^\n]\n",
+                              &p.op_no, p.name, p.disease, p.doctor) != EOF) {
+                    printf("\nOP: %d\nName: %s\nDisease: %s\nDoctor: %s\n",
+                           p.op_no, p.name, p.disease, p.doctor);
+                }
+
+                fclose(fp);
+                break;
+
+            /* SEARCH RECORD */
+            case 3:
+                fp = fopen("patients.csv", "r");
+                if (fp == NULL) {
+                    printf("File not found!\n");
+                    break;
+                }
+
+                printf("Enter OP Number to search: ");
+                scanf("%d", &search_op);
+
+                found = 0;
+                while (fscanf(fp, "%d,%49[^,],%49[^,],%49[^\n]\n",
+                              &p.op_no, p.name, p.disease, p.doctor) != EOF) {
+                    if (p.op_no == search_op) {
+                        printf("\nRecord Found!\n");
+                        printf("OP: %d\nName: %s\nDisease: %s\nDoctor: %s\n",
+                               p.op_no, p.name, p.disease, p.doctor);
+                        found = 1;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    printf("No record found!\n");
+
+                fclose(fp);
+                break;
+
+            case 4:
+                exit(0);
+
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+}
